@@ -39,10 +39,12 @@ Claude Code를 활용하여 다음 작업을 수행했습니다:
 
 ## 기술 스택
 
-- Kotlin 1.9.x / Spring Boot 3.4.x / Gradle (Kotlin DSL)
-- Java 17 / PostgreSQL 15.8+ / JPA
-- JWT 인증 / OpenAI API 연동
-- Swagger UI (API 문서)
+- Kotlin 1.9.25 / Spring Boot 3.4.3 / Gradle (Kotlin DSL)
+- Java 17 / PostgreSQL 15.8+
+- Spring Data JPA / Spring Security
+- JJWT 0.12.6 (JWT 인증)
+- Spring WebFlux (OpenAI API 연동용 WebClient)
+- SpringDoc OpenAPI 2.8.4 (Swagger UI)
 
 ## 빠른 시작
 
