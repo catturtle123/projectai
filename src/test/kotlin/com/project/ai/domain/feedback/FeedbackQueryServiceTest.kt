@@ -81,7 +81,7 @@ class FeedbackQueryServiceTest {
         assertThat(result.content[0].feedbackId).isEqualTo(1L)
         assertThat(result.content[0].chatId).isEqualTo(1L)
         assertThat(result.content[0].isPositive).isTrue()
-        assertThat(result.content[0].status).isEqualTo("pending")
+        assertThat(result.content[0].status).isEqualTo(FeedbackStatus.PENDING)
     }
 
     @Test
