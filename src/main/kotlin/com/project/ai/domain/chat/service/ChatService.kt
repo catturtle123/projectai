@@ -1,5 +1,6 @@
 package com.project.ai.domain.chat.service
 
+import com.project.ai.domain.analytics.service.ActivityLogService
 import com.project.ai.domain.chat.dto.ChatCreateRequest
 import com.project.ai.domain.chat.dto.ChatCreateResponse
 import com.project.ai.domain.chat.dto.OpenAiMessage
@@ -26,6 +27,7 @@ class ChatService(
     private val userRepository: UserRepository,
     private val openAiService: OpenAiService,
     private val transactionTemplate: TransactionTemplate,
+    private val activityLogService: ActivityLogService,
 ) {
     private val log = LoggerFactory.getLogger(this::class.java)
 
@@ -52,6 +54,8 @@ class ChatService(
                     answer = answer,
                 ),
             )
+
+        activityLogService.log("CHAT_CREATE", userId)
 
         return ChatCreateResponse(
             chatId = chat.id,

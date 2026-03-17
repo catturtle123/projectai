@@ -1,5 +1,6 @@
 package com.project.ai.domain.chat
 
+import com.project.ai.domain.analytics.service.ActivityLogService
 import com.project.ai.domain.chat.dto.ChatCreateRequest
 import com.project.ai.domain.chat.dto.OpenAiMessage
 import com.project.ai.domain.chat.entity.Chat
@@ -42,6 +43,9 @@ class ChatServiceTest {
 
     @Mock
     private lateinit var transactionTemplate: TransactionTemplate
+
+    @Mock
+    private lateinit var activityLogService: ActivityLogService
 
     @InjectMocks
     private lateinit var chatService: ChatService

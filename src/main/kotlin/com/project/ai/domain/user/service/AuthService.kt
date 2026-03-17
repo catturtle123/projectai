@@ -1,5 +1,6 @@
 package com.project.ai.domain.user.service
 
+import com.project.ai.domain.analytics.service.ActivityLogService
 import com.project.ai.domain.user.dto.LoginRequest
 import com.project.ai.domain.user.dto.LoginResponse
 import com.project.ai.domain.user.dto.SignupRequest
@@ -19,6 +20,7 @@ class AuthService(
     private val userRepository: UserRepository,
     private val passwordEncoder: PasswordEncoder,
     private val jwtProvider: JwtProvider,
+    private val activityLogService: ActivityLogService,
 ) {
     @Transactional
     fun signup(request: SignupRequest): SignupResponse {
@@ -34,6 +36,8 @@ class AuthService(
                     name = request.name,
                 ),
             )
+
+        activityLogService.log("SIGNUP", user.id)
 
         return SignupResponse(
             id = user.id,
@@ -52,6 +56,8 @@ class AuthService(
         if (!passwordEncoder.matches(request.password, user.password)) {
             throw AppException(ErrorCode.INVALID_CREDENTIALS)
         }
+
+        activityLogService.log("LOGIN", user.id)
 
         val token =
             jwtProvider.generateToken(
