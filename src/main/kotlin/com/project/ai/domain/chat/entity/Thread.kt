@@ -2,6 +2,7 @@ package com.project.ai.domain.chat.entity
 
 import com.project.ai.domain.user.entity.User
 import com.project.ai.global.common.BaseTimeEntity
+import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.FetchType
 import jakarta.persistence.GeneratedValue
@@ -20,4 +21,6 @@ class Thread(
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     val user: User,
+    @Column(name = "user_id", insertable = false, updatable = false)
+    val userId: Long = 0,
 ) : BaseTimeEntity()
