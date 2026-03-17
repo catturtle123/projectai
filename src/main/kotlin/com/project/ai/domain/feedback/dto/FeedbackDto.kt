@@ -4,6 +4,11 @@ import com.project.ai.domain.feedback.entity.FeedbackStatus
 import jakarta.validation.constraints.NotNull
 import java.time.LocalDateTime
 
+data class FeedbackCreateRequest(
+    val chatId: Long,
+    val isPositive: Boolean,
+)
+
 data class FeedbackStatusUpdateRequest(
     @field:NotNull(message = "상태는 필수 입력입니다")
     val status: FeedbackStatus,

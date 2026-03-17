@@ -2,12 +2,14 @@ package com.project.ai.domain.feedback
 
 import com.project.ai.domain.chat.entity.Chat
 import com.project.ai.domain.chat.entity.Thread
+import com.project.ai.domain.chat.repository.ChatRepository
 import com.project.ai.domain.feedback.dto.FeedbackStatusUpdateRequest
 import com.project.ai.domain.feedback.entity.Feedback
 import com.project.ai.domain.feedback.entity.FeedbackStatus
 import com.project.ai.domain.feedback.repository.FeedbackRepository
 import com.project.ai.domain.feedback.service.FeedbackService
 import com.project.ai.domain.user.entity.User
+import com.project.ai.domain.user.repository.UserRepository
 import com.project.ai.global.error.AppException
 import com.project.ai.global.error.ErrorCode
 import org.assertj.core.api.Assertions.assertThat
@@ -24,6 +26,12 @@ import java.util.Optional
 class FeedbackStatusServiceTest {
     @Mock
     private lateinit var feedbackRepository: FeedbackRepository
+
+    @Mock
+    private lateinit var chatRepository: ChatRepository
+
+    @Mock
+    private lateinit var userRepository: UserRepository
 
     @InjectMocks
     private lateinit var feedbackService: FeedbackService
