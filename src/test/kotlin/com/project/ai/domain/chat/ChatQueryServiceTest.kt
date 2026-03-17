@@ -1,4 +1,4 @@
-package com.project.ai.domain.chat.domain.chat
+package com.project.ai.domain.chat
 
 import com.project.ai.domain.chat.entity.Chat
 import com.project.ai.domain.chat.entity.Thread
@@ -56,11 +56,11 @@ class ChatQueryServiceTest {
 
         given(threadRepository.findAllByUserId(1L, pageable))
             .willReturn(PageImpl(listOf(thread), pageable, 1))
-        given(chatRepository.findAllByThreadIdOrderByCreatedAtAsc(thread.id))
+        given(chatRepository.findAllByThreadIdInOrderByCreatedAtAsc(listOf(1L)))
             .willReturn(listOf(chat))
 
         // when
-        val result = chatQueryService.getChats(userId = 1L, role = "member", page = 0, size = 20, sort = "desc")
+        val result = chatQueryService.getChats(userId = 1L, role = Role.MEMBER, page = 0, size = 20, sort = "desc")
 
         // then
         assertThat(result.totalElements).isEqualTo(1)
@@ -76,17 +76,17 @@ class ChatQueryServiceTest {
         val user2 = createUser(id = 2L, email = "user2@test.com")
         val thread1 = createThread(id = 1L, user = user1)
         val thread2 = createThread(id = 2L, user = user2)
+        val chat1 = createChat(id = 1L, thread = thread1)
+        val chat2 = createChat(id = 2L, thread = thread2)
         val pageable = PageRequest.of(0, 20, Sort.by(Sort.Direction.DESC, "createdAt"))
 
         given(threadRepository.findAll(pageable))
             .willReturn(PageImpl(listOf(thread1, thread2), pageable, 2))
-        given(chatRepository.findAllByThreadIdOrderByCreatedAtAsc(1L))
-            .willReturn(listOf(createChat(id = 1L, thread = thread1)))
-        given(chatRepository.findAllByThreadIdOrderByCreatedAtAsc(2L))
-            .willReturn(listOf(createChat(id = 2L, thread = thread2)))
+        given(chatRepository.findAllByThreadIdInOrderByCreatedAtAsc(listOf(1L, 2L)))
+            .willReturn(listOf(chat1, chat2))
 
         // when
-        val result = chatQueryService.getChats(userId = 1L, role = "admin", page = 0, size = 20, sort = "desc")
+        val result = chatQueryService.getChats(userId = 1L, role = Role.ADMIN, page = 0, size = 20, sort = "desc")
 
         // then
         assertThat(result.totalElements).isEqualTo(2)
@@ -102,11 +102,11 @@ class ChatQueryServiceTest {
 
         given(threadRepository.findAllByUserId(1L, pageable))
             .willReturn(PageImpl(listOf(thread), pageable, 11))
-        given(chatRepository.findAllByThreadIdOrderByCreatedAtAsc(thread.id))
+        given(chatRepository.findAllByThreadIdInOrderByCreatedAtAsc(listOf(1L)))
             .willReturn(emptyList())
 
         // when
-        val result = chatQueryService.getChats(userId = 1L, role = "member", page = 1, size = 10, sort = "desc")
+        val result = chatQueryService.getChats(userId = 1L, role = Role.MEMBER, page = 1, size = 10, sort = "desc")
 
         // then
         assertThat(result.totalElements).isEqualTo(11)
@@ -117,14 +117,13 @@ class ChatQueryServiceTest {
     @Test
     fun `오름차순 정렬이 올바르게 적용되어야 한다`() {
         // given
-        val user = createUser()
         val pageable = PageRequest.of(0, 20, Sort.by(Sort.Direction.ASC, "createdAt"))
 
         given(threadRepository.findAllByUserId(1L, pageable))
             .willReturn(PageImpl(emptyList(), pageable, 0))
 
         // when
-        val result = chatQueryService.getChats(userId = 1L, role = "member", page = 0, size = 20, sort = "asc")
+        val result = chatQueryService.getChats(userId = 1L, role = Role.MEMBER, page = 0, size = 20, sort = "asc")
 
         // then
         assertThat(result.totalElements).isEqualTo(0)
@@ -140,7 +139,7 @@ class ChatQueryServiceTest {
             .willReturn(PageImpl(emptyList(), pageable, 0))
 
         // when
-        val result = chatQueryService.getChats(userId = 1L, role = "member", page = 0, size = 20, sort = "desc")
+        val result = chatQueryService.getChats(userId = 1L, role = Role.MEMBER, page = 0, size = 20, sort = "desc")
 
         // then
         assertThat(result.totalElements).isEqualTo(0)
@@ -158,11 +157,11 @@ class ChatQueryServiceTest {
 
         given(threadRepository.findAllByUserId(1L, pageable))
             .willReturn(PageImpl(listOf(thread), pageable, 1))
-        given(chatRepository.findAllByThreadIdOrderByCreatedAtAsc(thread.id))
+        given(chatRepository.findAllByThreadIdInOrderByCreatedAtAsc(listOf(1L)))
             .willReturn(listOf(chat1, chat2))
 
         // when
-        val result = chatQueryService.getChats(userId = 1L, role = "member", page = 0, size = 20, sort = "desc")
+        val result = chatQueryService.getChats(userId = 1L, role = Role.MEMBER, page = 0, size = 20, sort = "desc")
 
         // then
         assertThat(result.content).hasSize(1)

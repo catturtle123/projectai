@@ -8,4 +8,6 @@ interface ChatRepository : JpaRepository<Chat, Long> {
     fun findAllByThreadOrderByCreatedAtAsc(thread: Thread): List<Chat>
 
     fun findAllByThreadIdOrderByCreatedAtAsc(threadId: Long): List<Chat>
+
+    fun findAllByThreadIdInOrderByCreatedAtAsc(threadIds: List<Long>): List<Chat>
 }
