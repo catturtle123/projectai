@@ -33,7 +33,7 @@ class FeedbackService(
             chatRepository.findById(request.chatId)
                 .orElseThrow { AppException(ErrorCode.CHAT_NOT_FOUND) }
 
-        if (role == Role.MEMBER && chat.thread.userId != userId) {
+        if (role == Role.MEMBER && chat.thread.user.id != userId) {
             throw AppException(ErrorCode.FEEDBACK_ACCESS_DENIED)
         }
 

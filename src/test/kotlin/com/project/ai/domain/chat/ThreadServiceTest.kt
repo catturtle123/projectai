@@ -39,7 +39,7 @@ class ThreadServiceTest {
     @Test
     fun `스레드를 정상적으로 삭제해야 한다`() {
         // given
-        val thread = Thread(id = 10L, user = user, userId = 1L)
+        val thread = Thread(id = 10L, user = user)
 
         given(threadRepository.findById(10L)).willReturn(Optional.of(thread))
 
@@ -70,7 +70,7 @@ class ThreadServiceTest {
     @Test
     fun `다른 사용자의 스레드 삭제 시 THREAD_ACCESS_DENIED 예외가 발생해야 한다`() {
         // given
-        val thread = Thread(id = 10L, user = otherUser, userId = 2L)
+        val thread = Thread(id = 10L, user = otherUser)
         given(threadRepository.findById(10L)).willReturn(Optional.of(thread))
 
         // when
@@ -86,7 +86,7 @@ class ThreadServiceTest {
     @Test
     fun `대화가 없는 스레드도 정상적으로 삭제해야 한다`() {
         // given
-        val thread = Thread(id = 10L, user = user, userId = 1L)
+        val thread = Thread(id = 10L, user = user)
 
         given(threadRepository.findById(10L)).willReturn(Optional.of(thread))
 

@@ -24,7 +24,7 @@ class ThreadService(
             threadRepository.findById(threadId)
                 .orElseThrow { AppException(ErrorCode.THREAD_NOT_FOUND) }
 
-        if (thread.userId != userId) {
+        if (thread.user.id != userId) {
             throw AppException(ErrorCode.THREAD_ACCESS_DENIED)
         }
 

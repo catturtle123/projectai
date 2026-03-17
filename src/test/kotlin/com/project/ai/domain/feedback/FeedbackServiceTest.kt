@@ -40,7 +40,7 @@ class FeedbackServiceTest {
 
     private val testUser = User(id = 1L, email = "test@test.com", password = "password123", name = "테스트")
     private val otherUser = User(id = 2L, email = "other@test.com", password = "password123", name = "다른유저")
-    private val testThread = Thread(id = 1L, user = testUser, userId = 1L)
+    private val testThread = Thread(id = 1L, user = testUser)
     private val testChat = Chat(id = 1L, thread = testThread, question = "질문", answer = "답변")
 
     @Test
