@@ -6,8 +6,17 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
+import java.time.LocalDateTime
 
 interface ChatRepository : JpaRepository<Chat, Long> {
+    @Query(
+        "SELECT c FROM Chat c JOIN FETCH c.thread t JOIN FETCH t.user " +
+            "WHERE c.createdAt > :after ORDER BY c.createdAt ASC",
+    )
+    fun findAllWithUserAfter(
+        @Param("after") after: LocalDateTime,
+    ): List<Chat>
+
     fun findAllByThreadOrderByCreatedAtAsc(thread: Thread): List<Chat>
 
     fun findAllByThreadIdOrderByCreatedAtAsc(threadId: Long): List<Chat>
