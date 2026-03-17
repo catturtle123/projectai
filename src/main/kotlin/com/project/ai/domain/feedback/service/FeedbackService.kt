@@ -28,8 +28,9 @@ class FeedbackService(
             feedbackId = feedback.id,
             chatId = feedback.chat.id,
             isPositive = feedback.isPositive,
-            status = feedback.status.name.lowercase(),
+            status = feedback.status,
             createdAt = feedback.createdAt,
+            updatedAt = feedback.updatedAt,
         )
     }
 }

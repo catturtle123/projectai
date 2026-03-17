@@ -47,7 +47,7 @@ class FeedbackStatusServiceTest {
         assertThat(result.feedbackId).isEqualTo(1L)
         assertThat(result.chatId).isEqualTo(1L)
         assertThat(result.isPositive).isTrue()
-        assertThat(result.status).isEqualTo("resolved")
+        assertThat(result.status).isEqualTo(FeedbackStatus.RESOLVED)
         assertThat(feedback.status).isEqualTo(FeedbackStatus.RESOLVED)
     }
 
@@ -64,7 +64,7 @@ class FeedbackStatusServiceTest {
 
         // then
         assertThat(result.feedbackId).isEqualTo(2L)
-        assertThat(result.status).isEqualTo("pending")
+        assertThat(result.status).isEqualTo(FeedbackStatus.PENDING)
         assertThat(feedback.status).isEqualTo(FeedbackStatus.PENDING)
     }
 
@@ -98,7 +98,7 @@ class FeedbackStatusServiceTest {
 
         // then
         assertThat(result.feedbackId).isEqualTo(3L)
-        assertThat(result.status).isEqualTo("pending")
+        assertThat(result.status).isEqualTo(FeedbackStatus.PENDING)
         assertThat(feedback.status).isEqualTo(FeedbackStatus.PENDING)
     }
 }

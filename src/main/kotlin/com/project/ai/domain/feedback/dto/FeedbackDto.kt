@@ -13,6 +13,7 @@ data class FeedbackResponse(
     val feedbackId: Long,
     val chatId: Long,
     val isPositive: Boolean,
-    val status: String,
+    val status: FeedbackStatus,
     val createdAt: LocalDateTime,
+    val updatedAt: LocalDateTime,
 )
