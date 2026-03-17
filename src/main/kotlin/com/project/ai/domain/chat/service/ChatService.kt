@@ -101,6 +101,7 @@ class ChatService(
                                 answer = buffer.toString(),
                             ),
                         )
+                        activityLogService.log(ActivityType.CHAT_CREATE, userId)
                     }
                     log.info("스트리밍 대화 저장 완료: threadId={}", threadId)
                 }

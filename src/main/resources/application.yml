@@ -26,6 +26,11 @@ jwt:
   secret: ${JWT_SECRET:}
   expiration: ${JWT_EXPIRATION:86400000}
 
+# Admin
+admin:
+  email: ${ADMIN_EMAIL:}
+  password: ${ADMIN_PASSWORD:}
+
 # OpenAI
 openai:
   api-key: ${OPENAI_API_KEY:}
