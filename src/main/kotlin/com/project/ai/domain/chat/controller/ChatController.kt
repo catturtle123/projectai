@@ -1,6 +1,7 @@
 package com.project.ai.domain.chat.controller
 
 import com.project.ai.domain.chat.dto.ChatCreateRequest
+import com.project.ai.domain.chat.dto.ChatCreateResponse
 import com.project.ai.domain.chat.service.ChatService
 import com.project.ai.global.common.BaseResponse
 import com.project.ai.global.config.AuthenticatedUser
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import reactor.core.publisher.Flux
 
 @RestController
 @RequestMapping("/api/v1/chats")
@@ -27,18 +29,20 @@ class ChatController(
     fun createChat(
         @CurrentUser user: AuthenticatedUser,
         @Valid @RequestBody request: ChatCreateRequest,
-    ): Any {
-        if (request.isStreaming) {
-            val (threadId, flux) = chatService.createChatStream(user.id, request)
-            return ResponseEntity.ok()
-                .contentType(MediaType.TEXT_EVENT_STREAM)
-                .body(
-                    flux.map { content ->
-                        ServerSentEvent.builder(content).build()
-                    },
-                )
-        }
+    ): ResponseEntity<BaseResponse<ChatCreateResponse>> {
         val result = chatService.createChat(user.id, request)
         return ResponseEntity.ok(BaseResponse.success(result))
+    }
+
+    @PostMapping("/stream", produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
+    @Operation(summary = "대화 생성 (스트리밍)")
+    fun createChatStream(
+        @CurrentUser user: AuthenticatedUser,
+        @Valid @RequestBody request: ChatCreateRequest,
+    ): Flux<ServerSentEvent<String>> {
+        val (_, flux) = chatService.createChatStream(user.id, request)
+        return flux.map { content ->
+            ServerSentEvent.builder(content).build()
+        }
     }
 }

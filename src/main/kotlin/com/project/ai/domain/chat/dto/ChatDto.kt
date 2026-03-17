@@ -8,7 +8,6 @@ data class ChatCreateRequest(
     @field:NotBlank(message = "질문은 필수 입력입니다")
     @field:Size(max = 10000, message = "질문은 10000자 이내여야 합니다")
     val question: String,
-    val isStreaming: Boolean = false,
     val model: String? = null,
 )
 

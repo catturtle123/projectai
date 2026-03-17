@@ -10,6 +10,7 @@ import com.project.ai.domain.chat.service.ChatService
 import com.project.ai.domain.chat.service.OpenAiService
 import com.project.ai.domain.user.entity.User
 import com.project.ai.domain.user.repository.UserRepository
+import com.project.ai.global.common.BaseTimeEntity
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -21,6 +22,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.capture
 import org.mockito.kotlin.given
 import org.mockito.kotlin.isNull
+import org.springframework.transaction.support.TransactionTemplate
 import java.time.LocalDateTime
 import java.util.Optional
 
@@ -38,12 +40,24 @@ class ChatServiceTest {
     @Mock
     private lateinit var openAiService: OpenAiService
 
+    @Mock
+    private lateinit var transactionTemplate: TransactionTemplate
+
     @InjectMocks
     private lateinit var chatService: ChatService
 
     private fun createUser(): User = User(id = 1L, email = "test@test.com", password = "encoded", name = "테스터")
 
     private fun createThread(user: User): Thread = Thread(id = 1L, user = user)
+
+    private fun setCreatedAt(
+        entity: BaseTimeEntity,
+        time: LocalDateTime,
+    ) {
+        val field = BaseTimeEntity::class.java.getDeclaredField("createdAt")
+        field.isAccessible = true
+        field.set(entity, time)
+    }
 
     private fun createChat(
         thread: Thread,
@@ -52,10 +66,7 @@ class ChatServiceTest {
         createdAt: LocalDateTime = LocalDateTime.now(),
     ): Chat {
         val chat = Chat(id = 1L, thread = thread, question = question, answer = answer)
-        // Set createdAt via reflection for testing
-        val field = chat.javaClass.superclass.getDeclaredField("createdAt")
-        field.isAccessible = true
-        field.set(chat, createdAt)
+        setCreatedAt(chat, createdAt)
         return chat
     }
 
@@ -69,8 +80,8 @@ class ChatServiceTest {
         given(userRepository.findById(1L)).willReturn(Optional.of(user))
         given(threadRepository.findTopByUserIdOrderByCreatedAtDesc(1L)).willReturn(null)
         given(threadRepository.save(any<Thread>())).willReturn(newThread)
-        given(openAiService.chat(any<List<OpenAiMessage>>(), isNull())).willReturn("안녕하세요!")
         given(chatRepository.findAllByThreadOrderByCreatedAtAsc(newThread)).willReturn(emptyList())
+        given(openAiService.chat(any<List<OpenAiMessage>>(), isNull())).willReturn("안녕하세요!")
         given(chatRepository.save(any<Chat>())).willReturn(savedChat)
 
         val request = ChatCreateRequest(question = "안녕")
@@ -94,9 +105,8 @@ class ChatServiceTest {
 
         given(userRepository.findById(1L)).willReturn(Optional.of(user))
         given(threadRepository.findTopByUserIdOrderByCreatedAtDesc(1L)).willReturn(existingThread)
-        given(chatRepository.findAllByThreadOrderByCreatedAtAsc(existingThread))
-            .willReturn(listOf(recentChat))
-            .willReturn(listOf(recentChat))
+        given(chatRepository.findTopByThreadOrderByCreatedAtDesc(existingThread)).willReturn(recentChat)
+        given(chatRepository.findAllByThreadOrderByCreatedAtAsc(existingThread)).willReturn(listOf(recentChat))
         given(openAiService.chat(any<List<OpenAiMessage>>(), isNull())).willReturn("새 답변")
         given(chatRepository.save(any<Chat>())).willReturn(savedChat)
 
@@ -120,7 +130,7 @@ class ChatServiceTest {
 
         given(userRepository.findById(1L)).willReturn(Optional.of(user))
         given(threadRepository.findTopByUserIdOrderByCreatedAtDesc(1L)).willReturn(oldThread)
-        given(chatRepository.findAllByThreadOrderByCreatedAtAsc(oldThread)).willReturn(listOf(oldChat))
+        given(chatRepository.findTopByThreadOrderByCreatedAtDesc(oldThread)).willReturn(oldChat)
         given(threadRepository.save(any<Thread>())).willReturn(newThread)
         given(chatRepository.findAllByThreadOrderByCreatedAtAsc(newThread)).willReturn(emptyList())
         given(openAiService.chat(any<List<OpenAiMessage>>(), isNull())).willReturn("새 답변")
@@ -145,9 +155,8 @@ class ChatServiceTest {
 
         given(userRepository.findById(1L)).willReturn(Optional.of(user))
         given(threadRepository.findTopByUserIdOrderByCreatedAtDesc(1L)).willReturn(thread)
-        given(chatRepository.findAllByThreadOrderByCreatedAtAsc(thread))
-            .willReturn(listOf(previousChat))
-            .willReturn(listOf(previousChat))
+        given(chatRepository.findTopByThreadOrderByCreatedAtDesc(thread)).willReturn(previousChat)
+        given(chatRepository.findAllByThreadOrderByCreatedAtAsc(thread)).willReturn(listOf(previousChat))
         given(chatRepository.save(any<Chat>())).willReturn(savedChat)
 
         val messagesCaptor: ArgumentCaptor<List<OpenAiMessage>> =
@@ -179,13 +188,11 @@ class ChatServiceTest {
         val expectedAnswer = "AI가 생성한 답변입니다."
         val savedChat = Chat(id = 1L, thread = thread, question = "테스트 질문", answer = expectedAnswer)
 
-        // Set createdAt for the thread to be recent
-        val threadField = thread.javaClass.superclass.getDeclaredField("createdAt")
-        threadField.isAccessible = true
-        threadField.set(thread, LocalDateTime.now())
+        setCreatedAt(thread, LocalDateTime.now())
 
         given(userRepository.findById(1L)).willReturn(Optional.of(user))
         given(threadRepository.findTopByUserIdOrderByCreatedAtDesc(1L)).willReturn(thread)
+        given(chatRepository.findTopByThreadOrderByCreatedAtDesc(thread)).willReturn(null)
         given(chatRepository.findAllByThreadOrderByCreatedAtAsc(thread)).willReturn(emptyList())
         given(openAiService.chat(any<List<OpenAiMessage>>(), isNull())).willReturn(expectedAnswer)
         given(chatRepository.save(any<Chat>())).willReturn(savedChat)
