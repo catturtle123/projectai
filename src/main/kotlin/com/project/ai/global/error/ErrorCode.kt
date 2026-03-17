@@ -30,6 +30,9 @@ enum class ErrorCode(
     DUPLICATE_FEEDBACK(HttpStatus.CONFLICT, "FEEDBACK_002", "이미 해당 대화에 피드백을 작성했습니다."),
     FEEDBACK_ACCESS_DENIED(HttpStatus.FORBIDDEN, "FEEDBACK_003", "피드백에 대한 접근 권한이 없습니다."),
 
+    // OpenAI
+    OPENAI_API_ERROR(HttpStatus.BAD_GATEWAY, "OPENAI_001", "AI 응답 생성에 실패했습니다."),
+
     // Validation
     VALIDATION_001(HttpStatus.BAD_REQUEST, "VALIDATION_001", "유효하지 않은 입력입니다."),
 }
