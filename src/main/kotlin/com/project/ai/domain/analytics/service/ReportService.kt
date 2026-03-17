@@ -32,7 +32,7 @@ class ReportService(
     }
 
     private fun escapeCsv(value: String): String {
-        return if (value.contains(",") || value.contains("\n") || value.contains("\"")) {
+        return if (value.contains(",") || value.contains("\n") || value.contains("\r") || value.contains("\"")) {
             "\"${value.replace("\"", "\"\"")}\""
         } else {
             value
