@@ -1,6 +1,5 @@
 package com.project.ai.domain.chat
 
-import com.project.ai.domain.chat.entity.Chat
 import com.project.ai.domain.chat.entity.Thread
 import com.project.ai.domain.chat.repository.ChatRepository
 import com.project.ai.domain.chat.repository.ThreadRepository
@@ -13,9 +12,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.ArgumentMatchers.anyList
 import org.mockito.BDDMockito.given
-import org.mockito.BDDMockito.never
 import org.mockito.BDDMockito.then
 import org.mockito.InjectMocks
 import org.mockito.Mock
@@ -42,21 +39,15 @@ class ThreadServiceTest {
     @Test
     fun `스레드를 정상적으로 삭제해야 한다`() {
         // given
-        val thread = Thread(id = 10L, user = user)
-        val chats =
-            listOf(
-                Chat(id = 100L, thread = thread, question = "질문1", answer = "답변1"),
-                Chat(id = 101L, thread = thread, question = "질문2", answer = "답변2"),
-            )
+        val thread = Thread(id = 10L, user = user, userId = 1L)
 
         given(threadRepository.findById(10L)).willReturn(Optional.of(thread))
-        given(chatRepository.findAllByThreadIdOrderByCreatedAtAsc(10L)).willReturn(chats)
 
         // when
         threadService.deleteThread(userId = 1L, threadId = 10L)
 
         // then
-        then(feedbackRepository).should().deleteAllByChatIdIn(listOf(100L, 101L))
+        then(feedbackRepository).should().deleteAllByThreadId(10L)
         then(chatRepository).should().deleteAllByThreadId(10L)
         then(threadRepository).should().delete(thread)
     }
@@ -79,7 +70,7 @@ class ThreadServiceTest {
     @Test
     fun `다른 사용자의 스레드 삭제 시 THREAD_ACCESS_DENIED 예외가 발생해야 한다`() {
         // given
-        val thread = Thread(id = 10L, user = otherUser)
+        val thread = Thread(id = 10L, user = otherUser, userId = 2L)
         given(threadRepository.findById(10L)).willReturn(Optional.of(thread))
 
         // when
@@ -95,16 +86,15 @@ class ThreadServiceTest {
     @Test
     fun `대화가 없는 스레드도 정상적으로 삭제해야 한다`() {
         // given
-        val thread = Thread(id = 10L, user = user)
+        val thread = Thread(id = 10L, user = user, userId = 1L)
 
         given(threadRepository.findById(10L)).willReturn(Optional.of(thread))
-        given(chatRepository.findAllByThreadIdOrderByCreatedAtAsc(10L)).willReturn(emptyList())
 
         // when
         threadService.deleteThread(userId = 1L, threadId = 10L)
 
         // then
-        then(feedbackRepository).should(never()).deleteAllByChatIdIn(anyList())
+        then(feedbackRepository).should().deleteAllByThreadId(10L)
         then(chatRepository).should().deleteAllByThreadId(10L)
         then(threadRepository).should().delete(thread)
     }

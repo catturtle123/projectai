@@ -24,16 +24,11 @@ class ThreadService(
             threadRepository.findById(threadId)
                 .orElseThrow { AppException(ErrorCode.THREAD_NOT_FOUND) }
 
-        if (thread.user.id != userId) {
+        if (thread.userId != userId) {
             throw AppException(ErrorCode.THREAD_ACCESS_DENIED)
         }
 
-        val chats = chatRepository.findAllByThreadIdOrderByCreatedAtAsc(threadId)
-        val chatIds = chats.map { it.id }
-        if (chatIds.isNotEmpty()) {
-            feedbackRepository.deleteAllByChatIdIn(chatIds)
-        }
-
+        feedbackRepository.deleteAllByThreadId(threadId)
         chatRepository.deleteAllByThreadId(threadId)
         threadRepository.delete(thread)
     }
