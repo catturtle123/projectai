@@ -12,6 +12,10 @@ interface ChatRepository : JpaRepository<Chat, Long> {
 
     fun findAllByThreadIdOrderByCreatedAtAsc(threadId: Long): List<Chat>
 
+    fun findAllByThreadIdInOrderByCreatedAtAsc(threadIds: List<Long>): List<Chat>
+
+    fun findTopByThreadOrderByCreatedAtDesc(thread: Thread): Chat?
+
     @Modifying
     @Query("DELETE FROM Chat c WHERE c.thread.id = :threadId")
     fun deleteAllByThreadId(
