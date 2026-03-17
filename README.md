@@ -51,6 +51,7 @@ Claude Code를 활용하여 다음 작업을 수행했습니다:
 - Java 17+
 - PostgreSQL 15.8+
 - OpenAI API Key
+- 서버/DB 타임존: `Asia/Seoul` (KST) 기준으로 동작합니다
 
 ### 2. 데이터베이스 준비
 
