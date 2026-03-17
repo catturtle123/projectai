@@ -14,13 +14,14 @@ import jakarta.validation.constraints.Max
 import org.springframework.data.domain.Page
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
-import org.springframework.http.codec.ServerSentEvent
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter
+import java.util.concurrent.Executors
 
 @RestController
 @RequestMapping("/api/v1/chats")
@@ -28,6 +29,8 @@ import org.springframework.web.bind.annotation.RestController
 class ChatController(
     private val chatService: ChatService,
 ) {
+    private val executor = Executors.newCachedThreadPool()
+
     @PostMapping
     @Operation(summary = "대화 생성", description = "isStreaming=true 시 SSE 스트리밍 응답")
     fun createChat(
@@ -35,14 +38,24 @@ class ChatController(
         @Valid @RequestBody request: ChatCreateRequest,
     ): Any {
         if (request.isStreaming) {
+            val emitter = SseEmitter(60_000L)
             val (_, flux) = chatService.createChatStream(user.id, request)
-            return ResponseEntity.ok()
-                .contentType(MediaType.TEXT_EVENT_STREAM)
-                .body(
-                    flux.map { content ->
-                        ServerSentEvent.builder(content).build()
+
+            executor.execute {
+                flux.subscribe(
+                    { content ->
+                        try {
+                            emitter.send(SseEmitter.event().data(content, MediaType.TEXT_PLAIN))
+                        } catch (e: Exception) {
+                            emitter.completeWithError(e)
+                        }
                     },
+                    { error -> emitter.completeWithError(error) },
+                    { emitter.complete() },
                 )
+            }
+
+            return emitter
         }
         val result = chatService.createChat(user.id, request)
         return ResponseEntity.ok(BaseResponse.success(result))
