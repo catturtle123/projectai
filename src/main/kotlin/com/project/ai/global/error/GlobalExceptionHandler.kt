@@ -2,7 +2,9 @@ package com.project.ai.global.error
 
 import com.project.ai.global.common.BaseResponse
 import org.slf4j.LoggerFactory
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.AccessDeniedException
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
@@ -27,6 +29,13 @@ class GlobalExceptionHandler {
         return ResponseEntity
             .badRequest()
             .body(BaseResponse.error(ErrorCode.VALIDATION_001.code, message))
+    }
+
+    @ExceptionHandler(AccessDeniedException::class)
+    fun handleAccessDeniedException(e: AccessDeniedException): ResponseEntity<BaseResponse<Nothing>> {
+        return ResponseEntity
+            .status(HttpStatus.FORBIDDEN)
+            .body(BaseResponse.error("AUTH_005", "접근 권한이 없습니다."))
     }
 
     @ExceptionHandler(Exception::class)
