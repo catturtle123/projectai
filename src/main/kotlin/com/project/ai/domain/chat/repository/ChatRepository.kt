@@ -9,5 +9,7 @@ interface ChatRepository : JpaRepository<Chat, Long> {
 
     fun findAllByThreadIdOrderByCreatedAtAsc(threadId: Long): List<Chat>
 
+    fun findAllByThreadIdInOrderByCreatedAtAsc(threadIds: List<Long>): List<Chat>
+
     fun findTopByThreadOrderByCreatedAtDesc(thread: Thread): Chat?
 }
