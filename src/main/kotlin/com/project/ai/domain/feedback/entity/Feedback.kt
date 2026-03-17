@@ -38,6 +38,8 @@ class Feedback(
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chat_id", nullable = false)
     val chat: Chat,
+    @Column(name = "chat_id", insertable = false, updatable = false)
+    val chatId: Long = 0,
 ) : BaseTimeEntity()
 
 enum class FeedbackStatus {

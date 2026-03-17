@@ -51,7 +51,7 @@ class FeedbackQueryServiceTest {
         status: FeedbackStatus = FeedbackStatus.PENDING,
         user: User,
         chat: Chat,
-    ): Feedback = Feedback(id = id, isPositive = isPositive, status = status, user = user, chat = chat)
+    ): Feedback = Feedback(id = id, isPositive = isPositive, status = status, user = user, chat = chat, chatId = chat.id)
 
     @Test
     fun `일반 유저는 본인의 피드백만 조회해야 한다`() {
@@ -212,7 +212,7 @@ class FeedbackQueryServiceTest {
             }
 
         // then
-        assertThat(exception.errorCode).isEqualTo(ErrorCode.COMMON400)
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.VALIDATION_001)
     }
 
     @Test

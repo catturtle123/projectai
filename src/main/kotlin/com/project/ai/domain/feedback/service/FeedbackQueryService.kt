@@ -24,7 +24,7 @@ class FeedbackQueryService(
         size: Int,
         sort: String,
     ): Page<FeedbackResponse> {
-        if (sort !in setOf("asc", "desc")) throw AppException(ErrorCode.COMMON400)
+        if (sort !in setOf("asc", "desc")) throw AppException(ErrorCode.VALIDATION_001)
         val direction = if (sort == "asc") Sort.Direction.ASC else Sort.Direction.DESC
         val pageable = PageRequest.of(page, size, Sort.by(direction, "createdAt"))
 
@@ -39,7 +39,7 @@ class FeedbackQueryService(
         return feedbacks.map { feedback ->
             FeedbackResponse(
                 feedbackId = feedback.id,
-                chatId = feedback.chat.id,
+                chatId = feedback.chatId,
                 isPositive = feedback.isPositive,
                 status = feedback.status.name.lowercase(),
                 createdAt = feedback.createdAt,
