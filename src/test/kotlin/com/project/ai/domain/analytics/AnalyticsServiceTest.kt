@@ -1,5 +1,6 @@
 package com.project.ai.domain.analytics
 
+import com.project.ai.domain.analytics.entity.ActivityType
 import com.project.ai.domain.analytics.repository.ActivityLogRepository
 import com.project.ai.domain.analytics.service.AnalyticsService
 import org.assertj.core.api.Assertions.assertThat
@@ -9,7 +10,6 @@ import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.any
-import org.mockito.kotlin.eq
 import org.mockito.kotlin.given
 
 @ExtendWith(MockitoExtension::class)
@@ -23,12 +23,14 @@ class AnalyticsServiceTest {
     @Test
     fun `활동 통계가 올바르게 반환되어야 한다`() {
         // given
-        given(activityLogRepository.countByActivityTypeAndCreatedAtAfter(eq("SIGNUP"), any()))
-            .willReturn(5L)
-        given(activityLogRepository.countByActivityTypeAndCreatedAtAfter(eq("LOGIN"), any()))
-            .willReturn(10L)
-        given(activityLogRepository.countByActivityTypeAndCreatedAtAfter(eq("CHAT_CREATE"), any()))
-            .willReturn(3L)
+        given(activityLogRepository.countByActivityTypeSince(any()))
+            .willReturn(
+                listOf(
+                    arrayOf(ActivityType.SIGNUP as Any, 5L as Any),
+                    arrayOf(ActivityType.LOGIN as Any, 10L as Any),
+                    arrayOf(ActivityType.CHAT_CREATE as Any, 3L as Any),
+                ),
+            )
 
         // when
         val result = analyticsService.getActivitySummary()
@@ -43,12 +45,8 @@ class AnalyticsServiceTest {
     @Test
     fun `활동이 없을 때 모든 카운트가 0이어야 한다`() {
         // given
-        given(activityLogRepository.countByActivityTypeAndCreatedAtAfter(eq("SIGNUP"), any()))
-            .willReturn(0L)
-        given(activityLogRepository.countByActivityTypeAndCreatedAtAfter(eq("LOGIN"), any()))
-            .willReturn(0L)
-        given(activityLogRepository.countByActivityTypeAndCreatedAtAfter(eq("CHAT_CREATE"), any()))
-            .willReturn(0L)
+        given(activityLogRepository.countByActivityTypeSince(any()))
+            .willReturn(emptyList())
 
         // when
         val result = analyticsService.getActivitySummary()

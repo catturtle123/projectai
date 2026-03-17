@@ -1,5 +1,6 @@
 package com.project.ai.domain.chat.service
 
+import com.project.ai.domain.analytics.entity.ActivityType
 import com.project.ai.domain.analytics.service.ActivityLogService
 import com.project.ai.domain.chat.dto.ChatCreateRequest
 import com.project.ai.domain.chat.dto.ChatCreateResponse
@@ -55,7 +56,7 @@ class ChatService(
                 ),
             )
 
-        activityLogService.log("CHAT_CREATE", userId)
+        activityLogService.log(ActivityType.CHAT_CREATE, userId)
 
         return ChatCreateResponse(
             chatId = chat.id,

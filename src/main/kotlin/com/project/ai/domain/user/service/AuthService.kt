@@ -1,5 +1,6 @@
 package com.project.ai.domain.user.service
 
+import com.project.ai.domain.analytics.entity.ActivityType
 import com.project.ai.domain.analytics.service.ActivityLogService
 import com.project.ai.domain.user.dto.LoginRequest
 import com.project.ai.domain.user.dto.LoginResponse
@@ -37,7 +38,7 @@ class AuthService(
                 ),
             )
 
-        activityLogService.log("SIGNUP", user.id)
+        activityLogService.log(ActivityType.SIGNUP, user.id)
 
         return SignupResponse(
             id = user.id,
@@ -57,7 +58,7 @@ class AuthService(
             throw AppException(ErrorCode.INVALID_CREDENTIALS)
         }
 
-        activityLogService.log("LOGIN", user.id)
+        activityLogService.log(ActivityType.LOGIN, user.id)
 
         val token =
             jwtProvider.generateToken(
