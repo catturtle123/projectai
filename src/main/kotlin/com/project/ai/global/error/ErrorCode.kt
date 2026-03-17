@@ -20,6 +20,11 @@ enum class ErrorCode(
     // User
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "USER_001", "사용자를 찾을 수 없습니다."),
 
+    // Chat
+    THREAD_NOT_FOUND(HttpStatus.NOT_FOUND, "CHAT_001", "스레드를 찾을 수 없습니다."),
+    CHAT_NOT_FOUND(HttpStatus.NOT_FOUND, "CHAT_002", "대화를 찾을 수 없습니다."),
+    THREAD_ACCESS_DENIED(HttpStatus.FORBIDDEN, "CHAT_003", "해당 스레드에 접근 권한이 없습니다."),
+
     // Validation
     VALIDATION_001(HttpStatus.BAD_REQUEST, "VALIDATION_001", "유효하지 않은 입력입니다."),
 }
