@@ -14,6 +14,11 @@ class JwtProvider(
     @Value("\${jwt.secret}") private val secret: String,
     @Value("\${jwt.expiration}") private val expiration: Long,
 ) {
+    init {
+        require(secret.isNotBlank()) { "JWT_SECRET 환경변수가 설정되지 않았습니다." }
+        require(secret.toByteArray().size >= 32) { "JWT_SECRET은 최소 32바이트 이상이어야 합니다." }
+    }
+
     private val key by lazy { Keys.hmacShaKeyFor(secret.toByteArray()) }
 
     fun generateToken(

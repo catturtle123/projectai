@@ -1,5 +1,6 @@
 package com.project.ai.global.config
 
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpStatus
@@ -18,6 +19,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableMethodSecurity
 class SecurityConfig(
     private val jwtAuthenticationFilter: JwtAuthenticationFilter,
+    @Value("\${spring.profiles.active:}") private val activeProfile: String,
 ) {
     @Bean
     fun passwordEncoder(): PasswordEncoder = BCryptPasswordEncoder()
@@ -28,13 +30,16 @@ class SecurityConfig(
             .csrf { it.disable() }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .authorizeHttpRequests {
-                it
-                    .requestMatchers(
+                val publicPaths =
+                    mutableListOf(
                         "/api/v1/auth/**",
                         "/api/v1/health",
-                        "/swagger-ui/**",
-                        "/v3/api-docs/**",
-                    ).permitAll()
+                    )
+                if (activeProfile in listOf("local", "dev", "test")) {
+                    publicPaths.addAll(listOf("/swagger-ui/**", "/v3/api-docs/**"))
+                }
+                it
+                    .requestMatchers(*publicPaths.toTypedArray()).permitAll()
                     .anyRequest().authenticated()
             }
             .exceptionHandling {

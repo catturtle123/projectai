@@ -64,7 +64,7 @@ class OpenAiService(
         } catch (e: AppException) {
             throw e
         } catch (e: WebClientResponseException) {
-            log.error("OpenAI API 호출 실패: status={}, body={}", e.statusCode, e.responseBodyAsString)
+            log.error("OpenAI API 호출 실패: status={}", e.statusCode)
             throw AppException(ErrorCode.OPENAI_API_ERROR)
         } catch (e: WebClientRequestException) {
             log.error("OpenAI API 연결 실패: {}", e.message)

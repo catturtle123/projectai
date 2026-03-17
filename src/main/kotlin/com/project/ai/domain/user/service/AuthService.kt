@@ -9,6 +9,7 @@ import com.project.ai.domain.user.dto.SignupResponse
 import com.project.ai.domain.user.entity.User
 import com.project.ai.domain.user.repository.UserRepository
 import com.project.ai.global.config.JwtProvider
+import com.project.ai.global.config.LoginRateLimiter
 import com.project.ai.global.error.AppException
 import com.project.ai.global.error.ErrorCode
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -22,6 +23,7 @@ class AuthService(
     private val passwordEncoder: PasswordEncoder,
     private val jwtProvider: JwtProvider,
     private val activityLogService: ActivityLogService,
+    private val loginRateLimiter: LoginRateLimiter,
 ) {
     @Transactional
     fun signup(request: SignupRequest): SignupResponse {
@@ -50,14 +52,23 @@ class AuthService(
     }
 
     fun login(request: LoginRequest): LoginResponse {
+        if (loginRateLimiter.isBlocked(request.email)) {
+            throw AppException(ErrorCode.TOO_MANY_REQUESTS)
+        }
+
         val user =
             userRepository.findByEmail(request.email)
-                ?: throw AppException(ErrorCode.INVALID_CREDENTIALS)
+                ?: run {
+                    loginRateLimiter.recordFailure(request.email)
+                    throw AppException(ErrorCode.INVALID_CREDENTIALS)
+                }
 
         if (!passwordEncoder.matches(request.password, user.password)) {
+            loginRateLimiter.recordFailure(request.email)
             throw AppException(ErrorCode.INVALID_CREDENTIALS)
         }
 
+        loginRateLimiter.resetAttempts(request.email)
         activityLogService.log(ActivityType.LOGIN, user.id)
 
         val token =

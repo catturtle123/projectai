@@ -23,7 +23,7 @@ server:
 
 # JWT
 jwt:
-  secret: ${JWT_SECRET:defaultSecretKeyForDevelopmentOnlyDoNotUseInProduction32}
+  secret: ${JWT_SECRET:}
   expiration: ${JWT_EXPIRATION:86400000}
 
 # OpenAI
