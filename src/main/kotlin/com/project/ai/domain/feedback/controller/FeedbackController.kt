@@ -7,6 +7,8 @@ import com.project.ai.domain.user.entity.Role
 import com.project.ai.global.common.BaseResponse
 import com.project.ai.global.config.AuthenticatedUser
 import com.project.ai.global.config.CurrentUser
+import com.project.ai.global.error.AppException
+import com.project.ai.global.error.ErrorCode
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
@@ -29,7 +31,12 @@ class FeedbackController(
         @CurrentUser user: AuthenticatedUser,
         @Valid @RequestBody request: FeedbackCreateRequest,
     ): ResponseEntity<BaseResponse<FeedbackResponse>> {
-        val role = Role.valueOf(user.role.uppercase())
+        val role =
+            try {
+                Role.valueOf(user.role.uppercase())
+            } catch (e: IllegalArgumentException) {
+                throw AppException(ErrorCode.AUTH_001)
+            }
         val result = feedbackService.createFeedback(user.id, role, request)
         return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponse.success(result))
     }

@@ -1,12 +1,9 @@
 package com.project.ai.domain.feedback.dto
 
-import jakarta.validation.constraints.NotNull
 import java.time.LocalDateTime
 
 data class FeedbackCreateRequest(
-    @field:NotNull
     val chatId: Long,
-    @field:NotNull
     val isPositive: Boolean,
 )
 

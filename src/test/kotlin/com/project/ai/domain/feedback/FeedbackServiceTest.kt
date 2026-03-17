@@ -21,6 +21,7 @@ import org.mockito.BDDMockito.given
 import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
+import org.mockito.kotlin.any
 import java.util.Optional
 
 @ExtendWith(MockitoExtension::class)
@@ -51,7 +52,7 @@ class FeedbackServiceTest {
         given(chatRepository.findById(1L)).willReturn(Optional.of(testChat))
         given(feedbackRepository.existsByUserIdAndChatId(1L, 1L)).willReturn(false)
         given(userRepository.findById(1L)).willReturn(Optional.of(testUser))
-        given(feedbackRepository.save(org.mockito.kotlin.any())).willReturn(feedback)
+        given(feedbackRepository.save(any())).willReturn(feedback)
 
         // when
         val result = feedbackService.createFeedback(1L, Role.MEMBER, request)
@@ -108,7 +109,7 @@ class FeedbackServiceTest {
         given(chatRepository.findById(1L)).willReturn(Optional.of(testChat))
         given(feedbackRepository.existsByUserIdAndChatId(3L, 1L)).willReturn(false)
         given(userRepository.findById(3L)).willReturn(Optional.of(adminUser))
-        given(feedbackRepository.save(org.mockito.kotlin.any())).willReturn(feedback)
+        given(feedbackRepository.save(any())).willReturn(feedback)
 
         // when
         val result = feedbackService.createFeedback(3L, Role.ADMIN, request)
