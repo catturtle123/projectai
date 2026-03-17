@@ -31,4 +31,6 @@ interface FeedbackRepository : JpaRepository<Feedback, Long> {
         userId: Long,
         chatId: Long,
     ): Boolean
+
+    fun deleteAllByChatIdIn(chatIds: List<Long>)
 }
