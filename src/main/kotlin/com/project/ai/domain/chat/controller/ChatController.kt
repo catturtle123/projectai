@@ -3,7 +3,6 @@ package com.project.ai.domain.chat.controller
 import com.project.ai.domain.chat.dto.ChatCreateRequest
 import com.project.ai.domain.chat.dto.ChatCreateResponse
 import com.project.ai.domain.chat.dto.ThreadResponse
-import com.project.ai.domain.chat.service.ChatQueryService
 import com.project.ai.domain.chat.service.ChatService
 import com.project.ai.domain.user.entity.Role
 import com.project.ai.global.common.BaseResponse
@@ -30,7 +29,6 @@ import reactor.core.publisher.Flux
 @Tag(name = "Chat", description = "대화 API")
 class ChatController(
     private val chatService: ChatService,
-    private val chatQueryService: ChatQueryService,
 ) {
     @PostMapping
     @Operation(summary = "대화 생성")
@@ -63,7 +61,7 @@ class ChatController(
         @RequestParam(defaultValue = "desc") sort: String,
     ): ResponseEntity<BaseResponse<Page<ThreadResponse>>> {
         val role = Role.valueOf(user.role.uppercase())
-        val result = chatQueryService.getChats(user.id, role, page, size, sort)
+        val result = chatService.getChats(user.id, role, page, size, sort)
         return ResponseEntity.ok(BaseResponse.success(result))
     }
 }

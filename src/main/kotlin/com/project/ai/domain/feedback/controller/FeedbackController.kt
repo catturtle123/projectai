@@ -3,7 +3,6 @@ package com.project.ai.domain.feedback.controller
 import com.project.ai.domain.feedback.dto.FeedbackCreateRequest
 import com.project.ai.domain.feedback.dto.FeedbackResponse
 import com.project.ai.domain.feedback.dto.FeedbackStatusUpdateRequest
-import com.project.ai.domain.feedback.service.FeedbackQueryService
 import com.project.ai.domain.feedback.service.FeedbackService
 import com.project.ai.domain.user.entity.Role
 import com.project.ai.global.common.BaseResponse
@@ -35,7 +34,6 @@ import org.springframework.web.bind.annotation.RestController
 @Tag(name = "Feedback", description = "피드백 API")
 class FeedbackController(
     private val feedbackService: FeedbackService,
-    private val feedbackQueryService: FeedbackQueryService,
 ) {
     @PostMapping
     @Operation(summary = "피드백 생성")
@@ -58,7 +56,7 @@ class FeedbackController(
         @RequestParam(defaultValue = "desc") sort: String,
     ): ResponseEntity<BaseResponse<Page<FeedbackResponse>>> {
         val role = parseRole(user.role)
-        val result = feedbackQueryService.getFeedbacks(user.id, role, isPositive, page, size, sort)
+        val result = feedbackService.getFeedbacks(user.id, role, isPositive, page, size, sort)
         return ResponseEntity.ok(BaseResponse.success(result))
     }
 
