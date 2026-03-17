@@ -135,7 +135,7 @@ class ChatEntityTest {
         chatRepository.save(Chat(thread = thread, question = "질문2", answer = "답변2"))
 
         // when
-        val chats = chatRepository.findAllByThreadId(thread.id)
+        val chats = chatRepository.findAllByThreadIdOrderByCreatedAtAsc(thread.id)
 
         // then
         assertThat(chats).hasSize(2)

@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository
 interface ChatRepository : JpaRepository<Chat, Long> {
     fun findAllByThreadOrderByCreatedAtAsc(thread: Thread): List<Chat>
 
-    fun findAllByThreadId(threadId: Long): List<Chat>
+    fun findAllByThreadIdOrderByCreatedAtAsc(threadId: Long): List<Chat>
 }
